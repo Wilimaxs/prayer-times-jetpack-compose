@@ -7,7 +7,7 @@ import retrofit2.http.Query
 
 interface ApiInterface {
     @GET("v1/timingsByCity")
-    suspend fun getTiminsgByCity(
+    suspend fun getTimingsByCity(
         @Query("city") city: String,
         @Query("country") country: String,
         @Query("method") method: Int = 20, // Kemenag Standard Indonesia
