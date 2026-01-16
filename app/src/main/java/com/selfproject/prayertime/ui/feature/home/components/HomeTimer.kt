@@ -33,7 +33,8 @@ import com.selfproject.prayertime.ui.theme.TextWhiteTertiary
 fun HomeTimerPrayer(
     hours: String,
     minutes: String,
-    seconds: String
+    seconds: String,
+    progress: Float
 ) {
     Box(
         modifier = Modifier
@@ -87,7 +88,7 @@ fun HomeTimerPrayer(
             }
         }
         LinearProgressIndicator(
-            progress = { 0.65f },
+            progress = { progress },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(4.dp)

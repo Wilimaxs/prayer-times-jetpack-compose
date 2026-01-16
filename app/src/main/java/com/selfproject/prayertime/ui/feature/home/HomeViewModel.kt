@@ -36,16 +36,18 @@ class HomeViewModel @Inject constructor(
 
     private fun startCountdown() {
         viewModelScope.launch {
-            val targetTime = System.currentTimeMillis() + (1 * 3600 * 1000) + (23 * 60 * 1000) + (45 * 1000)
+            val durationInMillis = (1 * 3600 * 1000L) + (23 * 60 * 1000L) + (45 * 1000L)
+            val targetTime = System.currentTimeMillis() + durationInMillis
 
             while (isActive) {
                 val currentTime = System.currentTimeMillis()
                 val remaining = targetTime - currentTime
 
                 if (remaining <= 0) {
-                    _timerState.value = TimerState()
+                    _timerState.value = TimerState(progress = 0f)
                     break
                 }
+                val progressValue = (remaining.toFloat() / durationInMillis.toFloat()).coerceIn(0f, 1f)
                 val hours = (remaining / (1000 * 60 * 60)) % 24
                 val minutes = (remaining / (1000 * 60)) % 60
                 val seconds = (remaining / 1000) % 60
@@ -53,7 +55,8 @@ class HomeViewModel @Inject constructor(
                 _timerState.value = TimerState(
                     hours = "%02d".format(hours),
                     minutes = "%02d".format(minutes),
-                    seconds = "%02d".format(seconds)
+                    seconds = "%02d".format(seconds),
+                    progress = progressValue
                 )
                 delay(1000L)
             }

@@ -64,7 +64,8 @@ fun HomeScreen(
             HomeTimerPrayer(
                 hours = timerState.hours,
                 minutes = timerState.minutes,
-                seconds = timerState.seconds
+                seconds = timerState.seconds,
+                progress = timerState.progress
             )
             Spacer(modifier = Modifier.height(32.dp))
             HomePrayerList(
