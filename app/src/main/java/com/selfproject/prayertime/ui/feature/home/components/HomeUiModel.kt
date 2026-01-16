@@ -8,3 +8,9 @@ data class PrayerTimeItem(
     val icon: ImageVector,
     val isActive: Boolean = false
 )
+
+data class TimerState(
+    val hours: String = "00",
+    val minutes: String = "00",
+    val seconds: String = "00"
+)

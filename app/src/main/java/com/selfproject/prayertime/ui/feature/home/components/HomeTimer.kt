@@ -30,7 +30,11 @@ import com.selfproject.prayertime.ui.theme.TextWhiteTertiary
 
 // Composable time prayer
 @Composable
-fun HomeTimerPrayer() {
+fun HomeTimerPrayer(
+    hours: String,
+    minutes: String,
+    seconds: String
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -58,7 +62,11 @@ fun HomeTimerPrayer() {
                 letterSpacing = 1.5.sp
             )
             Spacer(modifier = Modifier.height(12.dp))
-            Time()
+            Time(
+                hours = hours,
+                minutes = minutes,
+                seconds = seconds
+            )
             Spacer(modifier = Modifier.height(24.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -92,16 +100,20 @@ fun HomeTimerPrayer() {
 
 // Composable Time
 @Composable
-private fun Time() {
+private fun Time(
+    hours: String,
+    minutes: String,
+    seconds: String
+) {
     Row(
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "01",
+                text = hours,
                 color = TextWhite,
-                fontSize = 48.sp, // text-5xl
+                fontSize = 48.sp,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = (-2).sp
             )
@@ -128,7 +140,7 @@ private fun Time() {
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "23",
+                text = minutes,
                 color = TextWhite,
                 fontSize = 48.sp,
                 fontWeight = FontWeight.Bold,
@@ -157,7 +169,7 @@ private fun Time() {
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "45",
+                text = seconds,
                 color = PrimaryBlue,
                 fontSize = 48.sp,
                 fontWeight = FontWeight.Bold,

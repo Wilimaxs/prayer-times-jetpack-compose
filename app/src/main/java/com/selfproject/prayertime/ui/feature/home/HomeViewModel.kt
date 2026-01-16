@@ -4,10 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.selfproject.prayertime.data.common.Resource
 import com.selfproject.prayertime.data.respository.PrayerRepository
+import com.selfproject.prayertime.ui.feature.home.components.TimerState
 import com.selfproject.prayertime.ui.utils.helpers.DateHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,9 +26,41 @@ class HomeViewModel @Inject constructor(
     // Get current date for indonesia
     val todayDate: String = DateHelper.getCurrentDate()
 
+    private val _timerState = MutableStateFlow(TimerState())
+    val timerState = _timerState.asStateFlow()
+
     init {
         getPrayerTimes("Jakarta", "Indonesia")
+        startCountdown()
     }
+
+    private fun startCountdown() {
+        viewModelScope.launch {
+            val targetTime = System.currentTimeMillis() + (1 * 3600 * 1000) + (23 * 60 * 1000) + (45 * 1000)
+
+            while (isActive) {
+                val currentTime = System.currentTimeMillis()
+                val remaining = targetTime - currentTime
+
+                if (remaining <= 0) {
+                    _timerState.value = TimerState()
+                    break
+                }
+                val hours = (remaining / (1000 * 60 * 60)) % 24
+                val minutes = (remaining / (1000 * 60)) % 60
+                val seconds = (remaining / 1000) % 60
+
+                _timerState.value = TimerState(
+                    hours = "%02d".format(hours),
+                    minutes = "%02d".format(minutes),
+                    seconds = "%02d".format(seconds)
+                )
+                delay(1000L)
+            }
+        }
+    }
+
+
 
     fun getPrayerTimes(city: String, country: String) {
         viewModelScope.launch {

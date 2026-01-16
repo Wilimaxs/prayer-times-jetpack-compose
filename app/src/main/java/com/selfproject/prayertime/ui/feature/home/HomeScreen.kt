@@ -32,6 +32,8 @@ fun HomeScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
 
+    val timerState by viewModel.timerState.collectAsState()
+
     val dataText = viewModel.todayDate
     Box(
         modifier = Modifier
@@ -59,7 +61,11 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(16.dp))
             HomeLocation()
             Spacer(modifier = Modifier.height(32.dp))
-            HomeTimerPrayer()
+            HomeTimerPrayer(
+                hours = timerState.hours,
+                minutes = timerState.minutes,
+                seconds = timerState.seconds
+            )
             Spacer(modifier = Modifier.height(32.dp))
             HomePrayerList(
                 state = state
