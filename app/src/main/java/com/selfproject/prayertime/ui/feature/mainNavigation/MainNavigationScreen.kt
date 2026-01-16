@@ -26,6 +26,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.selfproject.prayertime.ui.feature.home.HomeScreen
 
 data class BottomNavItem(
     val name: String,
@@ -97,11 +98,11 @@ fun MainNavigationScreen() {
         NavHost(
             navController = navController,
             startDestination = Screen.Home.route,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
         ) {
             // 1. Tab Home
             composable(Screen.Home.route) {
-                PlaceholderScreen("Home")
+                HomeScreen()
             }
 
             // 2. Tab Qibla (Placeholder dulu)
