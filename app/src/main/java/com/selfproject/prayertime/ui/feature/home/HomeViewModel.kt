@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.selfproject.prayertime.data.common.Resource
 import com.selfproject.prayertime.data.respository.PrayerRepository
+import com.selfproject.prayertime.ui.utils.helpers.DateHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,6 +19,9 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
 
     val uiState = _uiState.asStateFlow()
+
+    // Get current date for indonesia
+    val todayDate: String = DateHelper.getCurrentDate()
 
     init {
         getPrayerTimes("Jakarta", "Indonesia")

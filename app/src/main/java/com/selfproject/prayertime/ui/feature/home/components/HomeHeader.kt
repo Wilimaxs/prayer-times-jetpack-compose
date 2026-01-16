@@ -29,7 +29,9 @@ import com.selfproject.prayertime.ui.theme.TextWhiteSecondary
 
 // Composable Date
 @Composable
-fun HomeDate() {
+fun HomeDate(
+    dateText: String
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -40,7 +42,7 @@ fun HomeDate() {
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-            "Wednesday, 20 April 2023",
+            dateText,
             color = TextWhite.copy(alpha = 0.9f),
             fontWeight = FontWeight.Medium,
             fontSize = 14.sp
