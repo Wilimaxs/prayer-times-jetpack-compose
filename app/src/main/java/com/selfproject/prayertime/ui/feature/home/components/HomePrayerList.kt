@@ -3,15 +3,24 @@ package com.selfproject.prayertime.ui.feature.home.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bedtime
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.NightsStay
+import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.material.icons.filled.WbTwilight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,22 +32,57 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.selfproject.prayertime.ui.feature.home.HomeUiState
 import com.selfproject.prayertime.ui.theme.GlassBorderActiveColor
 import com.selfproject.prayertime.ui.theme.GlassPanelActiveColor
 import com.selfproject.prayertime.ui.theme.GlassPanelColor
 import com.selfproject.prayertime.ui.theme.PrimaryBlue
 import com.selfproject.prayertime.ui.theme.TextWhite
 import com.selfproject.prayertime.ui.theme.TextWhiteSecondary
+import com.selfproject.prayertime.ui.utils.reusable.shimmerEffect
 
 //horizontal prayer time list
 @Composable
-fun HomePrayerList() {
+fun HomePrayerList(
+    state: HomeUiState
+) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(horizontal = 4.dp)
     ) {
-        items(dummyPrayerTimes) { item ->
-            PrayerItemCard(item)
+        when (state) {
+            is HomeUiState.Loading -> {
+                items(5) {
+                    PrayerItemShimmer()
+                }
+            }
+
+            is HomeUiState.Success -> {
+                val data = state.prayerData.timings
+
+                val PrayerTimes = listOf(
+                    PrayerTimeItem("Fajr", data.fajr, Icons.Default.WbTwilight, false),
+                    PrayerTimeItem("Dhuhr", data.dhuhr, Icons.Default.LightMode, false),
+                    PrayerTimeItem("Asr", data.asr, Icons.Default.WbSunny, true),
+                    PrayerTimeItem("Maghrib", data.maghrib, Icons.Default.NightsStay, false),
+                    PrayerTimeItem("Isha", data.isha, Icons.Default.Bedtime, false)
+                )
+
+                items(PrayerTimes) { item ->
+                    PrayerItemCard(item)
+                }
+            }
+
+            is HomeUiState.Error -> {
+                item {
+                    Text(
+                        text = state.message,
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+            }
         }
     }
 }
@@ -87,6 +131,42 @@ private fun PrayerItemCard(item: PrayerTimeItem) {
                 .copy(alpha = opacity),
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+//composable prayer item shimmer
+@Composable
+fun PrayerItemShimmer() {
+    Column(
+        modifier = Modifier
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color.White.copy(alpha = 0.1f))
+            .padding(horizontal = 24.dp, vertical = 12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .width(40.dp)
+                .height(12.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .shimmerEffect()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Box(
+            modifier = Modifier
+                .size(24.dp)
+                .clip(CircleShape)
+                .shimmerEffect()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Box(
+            modifier = Modifier
+                .width(50.dp)
+                .height(14.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .shimmerEffect()
         )
     }
 }

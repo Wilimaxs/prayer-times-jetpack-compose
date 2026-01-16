@@ -61,7 +61,9 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(32.dp))
             HomeTimerPrayer()
             Spacer(modifier = Modifier.height(32.dp))
-            HomePrayerList()
+            HomePrayerList(
+                state = state
+            )
             Spacer(modifier = Modifier.height(24.dp))
             HomeDhikrCard()
         }
