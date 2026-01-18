@@ -14,6 +14,7 @@ data class TimerState(
     val minutes: String = "00",
     val seconds: String = "00",
     val progress: Float = 0f,
+    val activePrayer: String = "Fajr",
     val nextPrayerName: String = "Sholat",
     val nextPrayerTime: String = "--:--"
 )

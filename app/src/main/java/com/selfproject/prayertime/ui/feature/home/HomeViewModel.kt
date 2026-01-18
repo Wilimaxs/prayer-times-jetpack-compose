@@ -71,8 +71,8 @@ class HomeViewModel @Inject constructor(
                 val nextPrayerIndex =
                     prayerTimesEntries.indexOfFirst { it.value.isAfter(currentTime) }
 
-                // prayer time before current time
-                val previousPrayerTime: LocalDateTime
+                // prayer time pair before current time
+                val previousPrayerTime: Pair<String, LocalDateTime>
                 // prayer time after current time
                 val nextPrayerTime: Map.Entry<String, LocalTime>
                 // prater time for check next day or current day
@@ -86,16 +86,20 @@ class HomeViewModel @Inject constructor(
                     targetDateTime = nextPrayerTime.value.atDate(now.toLocalDate())
                     // previous prayer time with current date use if else for fajr condition next days
                     previousPrayerTime = if (nextPrayerIndex > 0) {
-                        prayerTimesEntries[nextPrayerIndex - 1].value.atDate(now.toLocalDate())
+                        prayerTimesEntries[nextPrayerIndex - 1].key to prayerTimesEntries[nextPrayerIndex - 1].value.atDate(
+                            now.toLocalDate()
+                        )
                     } else {
-                        prayerTimesEntries.last().value.atDate(now.toLocalDate().minusDays(1))
+                        prayerTimesEntries.last().key to prayerTimesEntries.last().value.atDate(
+                            now.toLocalDate().minusDays(1)
+                        )
                     }
                 } else {
                     nextPrayerTime = prayerTimesEntries.first()
                     targetDateTime =
                         nextPrayerTime.value.atDate(now.toLocalDate().plusDays(1))
                     previousPrayerTime =
-                        prayerTimesEntries.last().value.atDate(now.toLocalDate())
+                        prayerTimesEntries.last().key to prayerTimesEntries.last().value.atDate(now.toLocalDate())
                 }
 
                 // Get remaining time in milliseconds
@@ -108,7 +112,7 @@ class HomeViewModel @Inject constructor(
                 }
 
                 // for progress bar logic calculation (0 - 1) (0 = start, 1 = end) (0.5 = middle) etc
-                val totalDuration = between(previousPrayerTime, targetDateTime).toMillis()
+                val totalDuration = between(previousPrayerTime.second, targetDateTime).toMillis()
                 val progressValue =
                     (remainingMillis.toFloat() / totalDuration.toFloat()).coerceIn(0f, 1f)
 
@@ -123,6 +127,7 @@ class HomeViewModel @Inject constructor(
                     minutes = "%02d".format(minutes),
                     seconds = "%02d".format(seconds),
                     progress = progressValue,
+                    activePrayer = previousPrayerTime.first,
                     nextPrayerName = nextPrayerTime.key,
                     nextPrayerTime = nextPrayerTime.value.format(formatter)
                 )

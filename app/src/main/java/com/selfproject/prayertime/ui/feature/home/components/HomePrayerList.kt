@@ -44,7 +44,8 @@ import com.selfproject.prayertime.ui.utils.reusable.shimmerEffect
 //horizontal prayer time list
 @Composable
 fun HomePrayerList(
-    state: HomeUiState
+    state: HomeUiState,
+    activePrayerName: String
 ) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -60,15 +61,40 @@ fun HomePrayerList(
             is HomeUiState.Success -> {
                 val data = state.prayerData.timings
 
-                val PrayerTimes = listOf(
-                    PrayerTimeItem("Fajr", data.fajr, Icons.Default.WbTwilight, false),
-                    PrayerTimeItem("Dhuhr", data.dhuhr, Icons.Default.LightMode, false),
-                    PrayerTimeItem("Asr", data.asr, Icons.Default.WbSunny, true),
-                    PrayerTimeItem("Maghrib", data.maghrib, Icons.Default.NightsStay, false),
-                    PrayerTimeItem("Isha", data.isha, Icons.Default.Bedtime, false)
+                val prayerTimes = listOf(
+                    PrayerTimeItem(
+                        "Fajr",
+                        data.fajr,
+                        Icons.Default.WbTwilight,
+                        activePrayerName == "Fajr"
+                    ),
+                    PrayerTimeItem(
+                        "Dhuhr",
+                        data.dhuhr,
+                        Icons.Default.LightMode,
+                        activePrayerName == "Dhuhr"
+                    ),
+                    PrayerTimeItem(
+                        "Asr",
+                        data.asr,
+                        Icons.Default.WbSunny,
+                        activePrayerName == "Asr"
+                    ),
+                    PrayerTimeItem(
+                        "Maghrib",
+                        data.maghrib,
+                        Icons.Default.NightsStay,
+                        activePrayerName == "Maghrib"
+                    ),
+                    PrayerTimeItem(
+                        "Isha",
+                        data.isha,
+                        Icons.Default.Bedtime,
+                        activePrayerName == "Isha"
+                    )
                 )
 
-                items(PrayerTimes) { item ->
+                items(prayerTimes) { item ->
                     PrayerItemCard(item)
                 }
             }
