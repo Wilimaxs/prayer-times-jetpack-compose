@@ -34,7 +34,9 @@ fun HomeTimerPrayer(
     hours: String,
     minutes: String,
     seconds: String,
-    progress: Float
+    progress: Float,
+    nextPrayerName: String,
+    nextPrayerTime: String
 ) {
     Box(
         modifier = Modifier
@@ -73,14 +75,14 @@ fun HomeTimerPrayer(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "Asr",
+                    text = nextPrayerName,
                     color = TextWhite,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = "15:45",
+                    text = nextPrayerTime,
                     color = TextWhiteSecondary,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Light

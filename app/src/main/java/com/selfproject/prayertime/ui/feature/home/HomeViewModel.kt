@@ -3,15 +3,21 @@ package com.selfproject.prayertime.ui.feature.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.selfproject.prayertime.data.common.Resource
+import com.selfproject.prayertime.data.model.PrayerData
 import com.selfproject.prayertime.data.respository.PrayerRepository
 import com.selfproject.prayertime.ui.feature.home.components.TimerState
 import com.selfproject.prayertime.ui.utils.helpers.DateHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.time.Duration.between
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,40 +35,102 @@ class HomeViewModel @Inject constructor(
     private val _timerState = MutableStateFlow(TimerState())
     val timerState = _timerState.asStateFlow()
 
+    private var countdownJob: Job? = null
+
     init {
         getPrayerTimes("Jakarta", "Indonesia")
-        startCountdown()
     }
 
-    private fun startCountdown() {
-        viewModelScope.launch {
-            val durationInMillis = (1 * 3600 * 1000L) + (23 * 60 * 1000L) + (45 * 1000L)
-            val targetTime = System.currentTimeMillis() + durationInMillis
 
+    private fun startCountdown(data: PrayerData) {
+        // cancel previous job
+        countdownJob?.cancel()
+        countdownJob = viewModelScope.launch {
+            // Formatter for time string (HH:mm)
+            val formatter = DateTimeFormatter.ofPattern("HH:mm")
+
+            // Map of prayer times become key-value pairs (Fajr -> LocalTime)
+            val prayerTimes = mapOf(
+                "Fajr" to LocalTime.parse(data.timings.fajr.take(5), formatter),
+                "Dhuhr" to LocalTime.parse(data.timings.dhuhr.take(5), formatter),
+                "Asr" to LocalTime.parse(data.timings.asr.take(5), formatter),
+                "Maghrib" to LocalTime.parse(data.timings.maghrib.take(5), formatter),
+                "Isha" to LocalTime.parse(data.timings.isha.take(5), formatter)
+            )
+
+            // Loop for every 1 second until the next prayer time
+            // Coroutine will be cancelled when the viewmodel is destroyed
             while (isActive) {
-                val currentTime = System.currentTimeMillis()
-                val remaining = targetTime - currentTime
+                // Get current time
+                val now = LocalDateTime.now()
+                val currentTime = now.toLocalTime()
 
-                if (remaining <= 0) {
-                    _timerState.value = TimerState(progress = 0f)
-                    break
+                // Change prayerTimes to list for indexing
+                val prayerTimesEntries = prayerTimes.entries.toList()
+                // looping form index 0 until current prayer time
+                val nextPrayerIndex =
+                    prayerTimesEntries.indexOfFirst { it.value.isAfter(currentTime) }
+
+                // prayer time before current time
+                val previousPrayerTime: LocalDateTime
+                // prayer time after current time
+                val nextPrayerTime: Map.Entry<String, LocalTime>
+                // prater time for check next day or current day
+                val targetDateTime: LocalDateTime
+
+                // if next prayer time is found
+                if (nextPrayerIndex != -1) {
+                    // next prayer time data from list
+                    nextPrayerTime = prayerTimesEntries[nextPrayerIndex]
+                    // combine prayer time with current date
+                    targetDateTime = nextPrayerTime.value.atDate(now.toLocalDate())
+                    // previous prayer time with current date use if else for fajr condition next days
+                    previousPrayerTime = if (nextPrayerIndex > 0) {
+                        prayerTimesEntries[nextPrayerIndex - 1].value.atDate(now.toLocalDate())
+                    } else {
+                        prayerTimesEntries.last().value.atDate(now.toLocalDate().minusDays(1))
+                    }
+                } else {
+                    nextPrayerTime = prayerTimesEntries.first()
+                    targetDateTime =
+                        nextPrayerTime.value.atDate(now.toLocalDate().plusDays(1))
+                    previousPrayerTime =
+                        prayerTimesEntries.last().value.atDate(now.toLocalDate())
                 }
-                val progressValue = (remaining.toFloat() / durationInMillis.toFloat()).coerceIn(0f, 1f)
-                val hours = (remaining / (1000 * 60 * 60)) % 24
-                val minutes = (remaining / (1000 * 60)) % 60
-                val seconds = (remaining / 1000) % 60
 
+                // Get remaining time in milliseconds
+                val remainingMillis = between(now, targetDateTime).toMillis()
+
+                // if remaining time < 0 then wait for 1 second and continue loop
+                if (remainingMillis <= 0) {
+                    delay(500)
+                    continue
+                }
+
+                // for progress bar logic calculation (0 - 1) (0 = start, 1 = end) (0.5 = middle) etc
+                val totalDuration = between(previousPrayerTime, targetDateTime).toMillis()
+                val progressValue =
+                    (remainingMillis.toFloat() / totalDuration.toFloat()).coerceIn(0f, 1f)
+
+                // conversion to hours, minutes, seconds with modulo operator to get only last 2 digits (00 - 59)
+                val hours = (remainingMillis / 3600000) % 24
+                val minutes = (remainingMillis / 60000) % 60
+                val seconds = (remainingMillis / 1000) % 60
+
+                // Update state with remaining time
                 _timerState.value = TimerState(
                     hours = "%02d".format(hours),
                     minutes = "%02d".format(minutes),
                     seconds = "%02d".format(seconds),
-                    progress = progressValue
+                    progress = progressValue,
+                    nextPrayerName = nextPrayerTime.key,
+                    nextPrayerTime = nextPrayerTime.value.format(formatter)
                 )
+                // wait for 1 second
                 delay(1000L)
             }
         }
     }
-
 
 
     fun getPrayerTimes(city: String, country: String) {
@@ -73,6 +141,7 @@ class HomeViewModel @Inject constructor(
                         is Resource.Loading -> HomeUiState.Loading
                         is Resource.Success -> {
                             if (result.data != null) {
+                                startCountdown(result.data)
                                 HomeUiState.Success(result.data)
                             } else {
                                 HomeUiState.Error("No data found")
