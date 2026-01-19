@@ -10,7 +10,6 @@ val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
-// Definisi Warna sesuai Tailwind Config & HTML
 val PrimaryBlue = Color(0xFF136dec)
 val BackgroundDark = Color(0xFF101822)
 val TextWhite = Color.White

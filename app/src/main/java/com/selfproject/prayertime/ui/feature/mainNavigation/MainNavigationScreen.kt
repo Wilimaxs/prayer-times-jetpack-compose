@@ -94,7 +94,7 @@ fun MainNavigationScreen() {
         NavHost(
             navController = navController,
             startDestination = Screen.Home.route,
-            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
+            Modifier.padding(bottom = if (showBottomBar) innerPadding.calculateBottomPadding() else 0.dp)
         ) {
             // 1. Tab Home
             composable(Screen.Home.route) {
@@ -104,7 +104,7 @@ fun MainNavigationScreen() {
 
             composable(Screen.Location.route) {
                 LocationFindScreen(
-                    onbackPressed = { navController.popBackStack() }
+                    onBackPressed = { navController.popBackStack() }
                 )
             }
 
