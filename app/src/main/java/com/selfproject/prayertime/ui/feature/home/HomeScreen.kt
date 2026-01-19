@@ -27,7 +27,8 @@ import com.selfproject.prayertime.ui.theme.PrayerTimeTheme
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
+    navigateToLocationPage: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
 
@@ -58,7 +59,9 @@ fun HomeScreen(
                 dateText = dataText
             )
             Spacer(modifier = Modifier.height(16.dp))
-            HomeLocation()
+            HomeLocation(
+                navigateToLocationPage = navigateToLocationPage
+            )
             Spacer(modifier = Modifier.height(32.dp))
             HomeTimerPrayer(
                 hours = timerState.hours,

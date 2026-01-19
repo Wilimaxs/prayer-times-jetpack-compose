@@ -29,9 +29,7 @@ import androidx.navigation.compose.rememberNavController
 import com.selfproject.prayertime.ui.feature.home.HomeScreen
 
 data class BottomNavItem(
-    val name: String,
-    val route: String,
-    val icon: ImageVector
+    val name: String, val route: String, val icon: ImageVector
 )
 
 @Composable
@@ -41,60 +39,57 @@ fun MainNavigationScreen() {
     val items = listOf(
         BottomNavItem(name = "Home", route = Screen.Home.route, icon = Icons.Default.Home),
         BottomNavItem(
-            name = "Qur'an",
-            route = Screen.Quran.route,
-            icon = Icons.AutoMirrored.Filled.MenuBook
+            name = "Qur'an", route = Screen.Quran.route, icon = Icons.AutoMirrored.Filled.MenuBook
         ),
         BottomNavItem(name = "Qibla", route = Screen.Qibla.route, icon = Icons.Default.Explore),
         BottomNavItem(
-            name = "Settings",
-            route = Screen.Settings.route,
-            icon = Icons.Default.Settings
+            name = "Settings", route = Screen.Settings.route, icon = Icons.Default.Settings
         ),
     )
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination
+
+    val showBottomBar = currentRoute?.route in items.map { it.route }
 
     Scaffold(
         bottomBar = {
-            NavigationBar(
-                modifier = Modifier.shadow(
-                    elevation = 8.dp,
-                    spotColor = Color.Black,
-                    ambientColor = Color.Black,
-                ),
-                containerColor = Color(0xFF102222),
-                contentColor = Color(0xFFFFFF66),
-            ) {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentRoute = navBackStackEntry?.destination
-
-                items.forEach { item ->
-                    val isSelected = currentRoute?.hierarchy?.any { it.route == item.route } == true
-                    NavigationBarItem(
-                        icon = { Icon(item.icon, contentDescription = item.name) },
-                        label = { Text(item.name) },
-                        selected = isSelected,
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = Color(0xFF102222),
-                            selectedTextColor = Color(0xFFEEBB44),
-                            indicatorColor = Color(0xFFEEBB44),
-                            unselectedIconColor = Color.White.copy(alpha = 0.6f),
-                            unselectedTextColor = Color.White.copy(alpha = 0.6f)
-                        ),
-                        onClick = {
-                            navController.navigate(item.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
+            if(showBottomBar) {
+                NavigationBar(
+                    modifier = Modifier.shadow(
+                        elevation = 8.dp,
+                        spotColor = Color.Black,
+                        ambientColor = Color.Black,
+                    ),
+                    containerColor = Color(0xFF102222),
+                    contentColor = Color(0xFFFFFF66),
+                ) {
+                    items.forEach { item ->
+                        val isSelected =
+                            currentRoute?.hierarchy?.any { it.route == item.route } == true
+                        NavigationBarItem(
+                            icon = { Icon(item.icon, contentDescription = item.name) },
+                            label = { Text(item.name) },
+                            selected = isSelected,
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = Color(0xFF102222),
+                                selectedTextColor = Color(0xFFEEBB44),
+                                indicatorColor = Color(0xFFEEBB44),
+                                unselectedIconColor = Color.White.copy(alpha = 0.6f),
+                                unselectedTextColor = Color.White.copy(alpha = 0.6f)
+                            ),
+                            onClick = {
+                                navController.navigate(item.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        }
-                    )
+                            })
+                    }
                 }
             }
-        }
-    ) { innerPadding ->
-
+        }) { innerPadding ->
         NavHost(
             navController = navController,
             startDestination = Screen.Home.route,
@@ -102,7 +97,12 @@ fun MainNavigationScreen() {
         ) {
             // 1. Tab Home
             composable(Screen.Home.route) {
-                HomeScreen()
+                HomeScreen(
+                    navigateToLocationPage = { navController.navigate(Screen.Location.route) })
+            }
+
+            composable(Screen.Location.route) {
+                PlaceholderScreen("Location")
             }
 
             // 2. Tab Qibla (Placeholder dulu)
@@ -125,8 +125,7 @@ fun MainNavigationScreen() {
 @Composable
 fun PlaceholderScreen(title: String) {
     androidx.compose.foundation.layout.Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = androidx.compose.ui.Alignment.Center
+        modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center
     ) {
         Text(text = "Halaman $title Belum Dibuat")
     }

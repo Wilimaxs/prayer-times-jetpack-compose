@@ -2,6 +2,7 @@ package com.selfproject.prayertime.ui.feature.home.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -52,7 +53,9 @@ fun HomeDate(
 
 // Composable Location
 @Composable
-fun HomeLocation() {
+fun HomeLocation(
+    navigateToLocationPage: () -> Unit
+) {
     Row(
         modifier = Modifier
             .border(
@@ -67,7 +70,8 @@ fun HomeLocation() {
             .padding(
                 horizontal = 16.dp,
                 vertical = 8.dp
-            ),
+            )
+            .clickable(onClick = navigateToLocationPage),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(

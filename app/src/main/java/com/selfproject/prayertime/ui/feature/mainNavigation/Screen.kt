@@ -5,4 +5,5 @@ sealed class Screen(val route: String) {
     object Quran : Screen("Quran")
     object Qibla : Screen("Qibla")
     object Settings : Screen("settings")
+    object Location : Screen("home/location")
 }
