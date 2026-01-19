@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.selfproject.prayertime.ui.feature.locationFind.components.CheckLocationCard
 import com.selfproject.prayertime.ui.feature.locationFind.components.SearchTextField
 import com.selfproject.prayertime.ui.theme.TextWhite
 
@@ -82,6 +83,10 @@ fun LocationFindScreen(
                 SearchTextField(
                     value = searchState.searchLocation,
                     onValueChange = { viewModel.searchLocation(it) }
+                )
+                Spacer(modifier = Modifier.height(36.dp))
+                CheckLocationCard(
+                    onCheckLocation = {}
                 )
             }
         }
