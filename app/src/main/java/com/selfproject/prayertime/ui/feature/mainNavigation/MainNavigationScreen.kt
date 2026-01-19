@@ -27,6 +27,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.selfproject.prayertime.ui.feature.home.HomeScreen
+import com.selfproject.prayertime.ui.feature.locationFind.LocationFindScreen
 
 data class BottomNavItem(
     val name: String, val route: String, val icon: ImageVector
@@ -53,7 +54,7 @@ fun MainNavigationScreen() {
 
     Scaffold(
         bottomBar = {
-            if(showBottomBar) {
+            if (showBottomBar) {
                 NavigationBar(
                     modifier = Modifier.shadow(
                         elevation = 8.dp,
@@ -102,7 +103,9 @@ fun MainNavigationScreen() {
             }
 
             composable(Screen.Location.route) {
-                PlaceholderScreen("Location")
+                LocationFindScreen(
+                    onbackPressed = { navController.popBackStack() }
+                )
             }
 
             // 2. Tab Qibla (Placeholder dulu)
