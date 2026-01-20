@@ -37,32 +37,32 @@ fun SearchTextField(
     val focusManager = LocalFocusManager.current
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(size = 24.dp),
         border = BorderStroke(
             width = 1.dp,
             color = GlassBorderColor
         ),
-        color = Color(0x80334455),
+        color = Color(color = 0x80334455),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(all = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search",
-                tint = Color(0x99FFFFFF),
-                modifier = Modifier.size(24.dp)
+                tint = Color(color = 0x99FFFFFF),
+                modifier = Modifier.size(size = 24.dp)
             )
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(width = 12.dp))
 
             BasicTextField(
                 value = value,
                 onValueChange = onValueChange,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(weight = 1f),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Search
@@ -76,7 +76,10 @@ fun SearchTextField(
                 decorationBox = { innerTextField ->
                     Box {
                         if (value.isEmpty()) {
-                            Text("Search", color = Color.White.copy(alpha = 0.5f))
+                            Text(
+                                text = "Search",
+                                color = Color.White.copy(alpha = 0.5f)
+                            )
                         }
                         innerTextField()
                     }

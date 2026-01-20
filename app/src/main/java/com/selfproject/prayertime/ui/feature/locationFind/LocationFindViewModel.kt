@@ -11,7 +11,7 @@ class LocationFindViewModel @Inject constructor(
 
 ) : ViewModel() {
 
-    private val _searchLocationText = MutableStateFlow(SearchLocationText())
+    private val _searchLocationText = MutableStateFlow(value = SearchLocationText())
     val searchLocationText = _searchLocationText.asStateFlow()
 
     fun searchLocation(location: String) {

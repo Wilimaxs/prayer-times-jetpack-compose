@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.selfproject.prayertime.ui.feature.locationFind.components.CheckLocationCard
+import com.selfproject.prayertime.ui.feature.locationFind.components.PopularLocation
 import com.selfproject.prayertime.ui.feature.locationFind.components.SearchTextField
 import com.selfproject.prayertime.ui.theme.TextWhite
 
@@ -42,7 +43,12 @@ fun LocationFindScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(text = "Select Location", textAlign = TextAlign.Center) },
+                title = {
+                    Text(
+                        text = "Select Location",
+                        textAlign = TextAlign.Center
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBackPressed) {
                         Icon(
@@ -66,28 +72,30 @@ fun LocationFindScreen(
                 .background(
                     brush = Brush.linearGradient(
                         colors = listOf(
-                            Color(0xFF0F2027),
-                            Color(0xFF203A43),
-                            Color(0xFF2C5364)
+                            Color(color = 0xFF0F2027),
+                            Color(color = 0xFF203A43),
+                            Color(color = 0xFF2C5364)
                         )
                     )
                 ),
         ) {
             Column(
                 modifier = Modifier
-                    .padding(innerPadding)
+                    .padding(paddingValues = innerPadding)
                     .padding(horizontal = 24.dp)
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(state = rememberScrollState())
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(height = 16.dp))
                 SearchTextField(
                     value = searchState.searchLocation,
-                    onValueChange = { viewModel.searchLocation(it) }
+                    onValueChange = { viewModel.searchLocation(location = it) }
                 )
-                Spacer(modifier = Modifier.height(36.dp))
+                Spacer(modifier = Modifier.height(height = 36.dp))
                 CheckLocationCard(
                     onCheckLocation = {}
                 )
+                Spacer(modifier = Modifier.height(height = 24.dp))
+                PopularLocation()
             }
         }
     }
