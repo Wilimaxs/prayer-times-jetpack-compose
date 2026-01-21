@@ -14,14 +14,20 @@ import javax.inject.Singleton
 class PrayerRepository @Inject constructor(
     private val apiInterface: ApiInterface
 ) {
-
-    fun getTimingsByCity(city: String, country: String, date: String): Flow<Resource<PrayerData>> =
+    fun getTimingsByCity(
+        latitude: String,
+        longitude: String,
+        date: String
+    ): Flow<Resource<PrayerData>> =
         flow {
             emit(Resource.Loading())
-
             try {
                 val response =
-                    apiInterface.getTimingsByCity(city = city, country = country, date = date)
+                    apiInterface.getTimingsByCity(
+                        latitude = latitude,
+                        longitude = longitude,
+                        date = date
+                    )
 
                 if (response.isSuccessful) {
                     val body = response.body()
@@ -37,5 +43,4 @@ class PrayerRepository @Inject constructor(
                 emit(Resource.Error("Connection error: ${e.message ?: "Unknown error"}"))
             }
         }.flowOn(Dispatchers.IO)
-
 }

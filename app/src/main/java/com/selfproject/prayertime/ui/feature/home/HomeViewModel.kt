@@ -41,10 +41,6 @@ class HomeViewModel @Inject constructor(
 
     private var countdownJob: Job? = null
 
-    init {
-        getPrayerTimes("Jakarta", "Indonesia")
-    }
-
 
     private fun startCountdown(data: PrayerData) {
         // cancel previous job
@@ -142,9 +138,13 @@ class HomeViewModel @Inject constructor(
     }
 
 
-    fun getPrayerTimes(city: String, country: String) {
+    fun getPrayerTimes(latitude: String = "-6.2088", longitude: String = "106.8456") {
         viewModelScope.launch {
-            repository.getTimingsByCity(city, country, todayDateOnly)
+            repository.getTimingsByCity(
+                latitude = latitude,
+                longitude = longitude,
+                date = todayDateOnly
+            )
                 .collect { result ->
                     Timber.i("Date: Cek date now $todayDateOnly")
                     _uiState.value = when (result) {

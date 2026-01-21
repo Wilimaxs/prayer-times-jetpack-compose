@@ -39,11 +39,11 @@ fun HomeScreen(
     val dataText = viewModel.todayDate
 
     RequestLocationPermission(
-        onPermissionGranted = {
-            Timber.i("UI: User kasih izin, OTW panggil ViewModel...")
+        onPermissionGranted = { latitude, longitude ->
+            viewModel.getPrayerTimes(latitude.toString(), longitude.toString())
         },
         onPermissionDenied = {
-            Timber.e("UI: User pelit, izin lokasi ditolak")
+            Timber.e("UI: User denied location permission")
         }
     )
 

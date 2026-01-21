@@ -18,3 +18,7 @@ data class TimerState(
     val nextPrayerName: String = "Sholat",
     val nextPrayerTime: String = "--:--"
 )
+
+data class LocationNameDefault(
+    val locationName: String = "jakarta, jakarta",
+)
