@@ -24,6 +24,8 @@ import com.selfproject.prayertime.ui.feature.home.components.HomeLocation
 import com.selfproject.prayertime.ui.feature.home.components.HomePrayerList
 import com.selfproject.prayertime.ui.feature.home.components.HomeTimerPrayer
 import com.selfproject.prayertime.ui.theme.PrayerTimeTheme
+import com.selfproject.prayertime.ui.utils.helpers.RequestLocationPermission
+import timber.log.Timber
 
 @Composable
 fun HomeScreen(
@@ -35,6 +37,16 @@ fun HomeScreen(
     val timerState by viewModel.timerState.collectAsState()
 
     val dataText = viewModel.todayDate
+
+    RequestLocationPermission(
+        onPermissionGranted = {
+            Timber.i("UI: User kasih izin, OTW panggil ViewModel...")
+        },
+        onPermissionDenied = {
+            Timber.e("UI: User pelit, izin lokasi ditolak")
+        }
+    )
+
     Box(
         modifier = Modifier
             .fillMaxSize()

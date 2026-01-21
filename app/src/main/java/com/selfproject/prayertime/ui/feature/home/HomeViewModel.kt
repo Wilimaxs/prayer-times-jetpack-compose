@@ -140,7 +140,7 @@ class HomeViewModel @Inject constructor(
 
     fun getPrayerTimes(city: String, country: String) {
         viewModelScope.launch {
-            repository.getTimingsByCity(city, country)
+            repository.getTimingsByCity(city, country, todayDate)
                 .collect { result ->
                     _uiState.value = when (result) {
                         is Resource.Loading -> HomeUiState.Loading
