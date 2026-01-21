@@ -62,6 +62,8 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation(libs.androidx.compose.material.icons.extended)
+    //----Location----
+    implementation(libs.play.services.location)
     //----navigation----
     implementation(libs.androidx.navigation.compose)
     //----Hilt----

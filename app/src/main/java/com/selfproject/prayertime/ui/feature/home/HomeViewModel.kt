@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.time.Duration.between
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -25,12 +26,15 @@ class HomeViewModel @Inject constructor(
     private val repository: PrayerRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
+    private val _uiState = MutableStateFlow<HomeUiState>(value = HomeUiState.Loading)
 
     val uiState = _uiState.asStateFlow()
 
-    // Get current date for indonesia
+    // Get current date with Day for indonesia
     val todayDate: String = DateHelper.getCurrentDate()
+
+    // Get just current date
+    val todayDateOnly: String = DateHelper.getCurrentDate(withDayName = false)
 
     private val _timerState = MutableStateFlow(TimerState())
     val timerState = _timerState.asStateFlow()
@@ -140,8 +144,9 @@ class HomeViewModel @Inject constructor(
 
     fun getPrayerTimes(city: String, country: String) {
         viewModelScope.launch {
-            repository.getTimingsByCity(city, country, todayDate)
+            repository.getTimingsByCity(city, country, todayDateOnly)
                 .collect { result ->
+                    Timber.i("Date: Cek date now $todayDateOnly")
                     _uiState.value = when (result) {
                         is Resource.Loading -> HomeUiState.Loading
                         is Resource.Success -> {

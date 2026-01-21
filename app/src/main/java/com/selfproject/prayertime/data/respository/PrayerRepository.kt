@@ -15,25 +15,27 @@ class PrayerRepository @Inject constructor(
     private val apiInterface: ApiInterface
 ) {
 
-    fun getTimingsByCity(city: String, country: String): Flow<Resource<PrayerData>> = flow {
-        emit(Resource.Loading())
+    fun getTimingsByCity(city: String, country: String, date: String): Flow<Resource<PrayerData>> =
+        flow {
+            emit(Resource.Loading())
 
-        try {
-            val response = apiInterface.getTimingsByCity(city, country)
+            try {
+                val response =
+                    apiInterface.getTimingsByCity(city = city, country = country, date = date)
 
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null) {
-                    emit(Resource.Success(body.data))
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    if (body != null) {
+                        emit(Resource.Success(body.data))
+                    } else {
+                        emit(Resource.Error("No data found"))
+                    }
                 } else {
-                    emit(Resource.Error("No data found"))
+                    emit(Resource.Error("something went wrong ${response.message()}"))
                 }
-            } else {
-                emit(Resource.Error("something went wrong ${response.message()}"))
+            } catch (e: Exception) {
+                emit(Resource.Error("Connection error: ${e.message ?: "Unknown error"}"))
             }
-        } catch (e: Exception) {
-            emit(Resource.Error("Connection error: ${e.message ?: "Unknown error"}"))
-        }
-    }.flowOn(Dispatchers.IO)
+        }.flowOn(Dispatchers.IO)
 
 }
