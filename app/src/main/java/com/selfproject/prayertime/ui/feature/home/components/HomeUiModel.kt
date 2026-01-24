@@ -20,5 +20,5 @@ data class TimerState(
 )
 
 data class LocationNameDefault(
-    val locationName: String = "jakarta, jakarta",
+    val locationName: String = "",
 )

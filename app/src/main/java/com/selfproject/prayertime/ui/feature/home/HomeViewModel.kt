@@ -1,13 +1,17 @@
 package com.selfproject.prayertime.ui.feature.home
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.selfproject.prayertime.data.common.Resource
 import com.selfproject.prayertime.data.model.PrayerData
 import com.selfproject.prayertime.data.respository.PrayerRepository
+import com.selfproject.prayertime.ui.feature.home.components.LocationNameDefault
 import com.selfproject.prayertime.ui.feature.home.components.TimerState
 import com.selfproject.prayertime.ui.utils.helpers.DateHelper
+import com.selfproject.prayertime.ui.utils.helpers.getLocationName
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,12 +27,19 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: PrayerRepository
+    private val repository: PrayerRepository,
+    @param:ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<HomeUiState>(value = HomeUiState.Loading)
-
     val uiState = _uiState.asStateFlow()
+
+    private val _timerState = MutableStateFlow(TimerState())
+    val timerState = _timerState.asStateFlow()
+
+    private val _locationName = MutableStateFlow(LocationNameDefault())
+    val locationName = _locationName.asStateFlow()
+
 
     // Get current date with Day for indonesia
     val todayDate: String = DateHelper.getCurrentDate()
@@ -36,8 +47,6 @@ class HomeViewModel @Inject constructor(
     // Get just current date
     val todayDateOnly: String = DateHelper.getCurrentDate(withDayName = false)
 
-    private val _timerState = MutableStateFlow(TimerState())
-    val timerState = _timerState.asStateFlow()
 
     private var countdownJob: Job? = null
 
@@ -151,6 +160,15 @@ class HomeViewModel @Inject constructor(
                         is Resource.Loading -> HomeUiState.Loading
                         is Resource.Success -> {
                             if (result.data != null) {
+                                val lat = latitude.toDoubleOrNull() ?: -6.2088
+                                val long = longitude.toDoubleOrNull() ?: 106.8456
+                                _locationName.value = LocationNameDefault(
+                                    locationName = getLocationName(
+                                        context = context,
+                                        lat = lat,
+                                        long = long
+                                    )
+                                )
                                 startCountdown(result.data)
                                 HomeUiState.Success(result.data)
                             } else {

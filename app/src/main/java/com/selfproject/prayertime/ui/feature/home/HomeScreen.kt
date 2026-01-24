@@ -25,7 +25,6 @@ import com.selfproject.prayertime.ui.feature.home.components.HomePrayerList
 import com.selfproject.prayertime.ui.feature.home.components.HomeTimerPrayer
 import com.selfproject.prayertime.ui.theme.PrayerTimeTheme
 import com.selfproject.prayertime.ui.utils.helpers.RequestLocationPermission
-import timber.log.Timber
 
 @Composable
 fun HomeScreen(
@@ -36,6 +35,8 @@ fun HomeScreen(
 
     val timerState by viewModel.timerState.collectAsState()
 
+    val locationName by viewModel.locationName.collectAsState()
+
     val dataText = viewModel.todayDate
 
     RequestLocationPermission(
@@ -43,7 +44,7 @@ fun HomeScreen(
             viewModel.getPrayerTimes(latitude.toString(), longitude.toString())
         },
         onPermissionDenied = {
-            Timber.e("UI: User denied location permission")
+            viewModel.getPrayerTimes()
         }
     )
 
@@ -72,7 +73,8 @@ fun HomeScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
             HomeLocation(
-                navigateToLocationPage = navigateToLocationPage
+                navigateToLocationPage = navigateToLocationPage,
+                locationName = locationName.locationName
             )
             Spacer(modifier = Modifier.height(32.dp))
             HomeTimerPrayer(

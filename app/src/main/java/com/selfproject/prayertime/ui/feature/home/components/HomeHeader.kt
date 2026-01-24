@@ -54,7 +54,8 @@ fun HomeDate(
 // Composable Location
 @Composable
 fun HomeLocation(
-    navigateToLocationPage: () -> Unit
+    navigateToLocationPage: () -> Unit,
+    locationName: String
 ) {
     Row(
         modifier = Modifier
@@ -82,7 +83,7 @@ fun HomeLocation(
         )
         Spacer(modifier = Modifier.width(6.dp))
         Text(
-            text = "Jakarta, Indonesia",
+            text = locationName,
             color = TextWhite,
             fontWeight = FontWeight.Bold,
             fontSize = 14.sp,
