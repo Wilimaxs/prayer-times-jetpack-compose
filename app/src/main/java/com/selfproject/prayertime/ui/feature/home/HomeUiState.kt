@@ -37,4 +37,7 @@ data class HomeScreenState(
     val timerState: TimerState = TimerState(),
     val locationName: LocationNameDefault = LocationNameDefault(),
     val fullTodayDate: String = "",
+    val isRefreshing: Boolean = false,
+    val latitude: String? = null,
+    val longitude: String? = null,
 )

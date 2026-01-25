@@ -149,18 +149,20 @@ class HomeViewModel @Inject constructor(
     }
 
 
-    fun getPrayerTimes(latitude: String = "-6.2088", longitude: String = "106.8456") {
+    fun getPrayerTimes(
+        latitude: String = "-6.2088",
+        longitude: String = "106.8456",
+        forceRefresh: Boolean = false
+    ) {
         val date = DateHelper.getCurrentDate(withDayName = false)
         val checkCache = "${latitude}_${longitude}_$date"
 
-        if (cacheCheckFetch == checkCache) return
+        if (!forceRefresh && cacheCheckFetch == checkCache) return
         cacheCheckFetch = checkCache
 
         viewModelScope.launch {
             repository.getTimingsByCity(
-                latitude = latitude,
-                longitude = longitude,
-                date = date
+                latitude = latitude, longitude = longitude, date = date
             ).collect { result ->
                 when (result) {
                     is Resource.Loading -> {
@@ -186,9 +188,10 @@ class HomeViewModel @Inject constructor(
                             it.copy(
                                 homeUiState = HomeUiState.Success(data),
                                 prayerTimes = prayerListItem(
-                                    prayerData = data,
-                                    prayerNameActive = it.timerState.activePrayer
+                                    prayerData = data, prayerNameActive = it.timerState.activePrayer
                                 ),
+                                latitude = latitude,
+                                longitude = longitude
                             )
                         }
 
@@ -221,7 +224,18 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun prayerListItem(
+    fun refresh() {
+        val lat = _homeState.value.latitude
+        val long = _homeState.value.longitude
+        if (lat != null && long != null) {
+            getPrayerTimes(lat, long, true)
+        } else {
+            getPrayerTimes(forceRefresh = true)
+        }
+    }
+
+
+    private fun prayerListItem(
         prayerData: PrayerData, prayerNameActive: String
     ): List<PrayerTimeItem> {
         return listOf(
