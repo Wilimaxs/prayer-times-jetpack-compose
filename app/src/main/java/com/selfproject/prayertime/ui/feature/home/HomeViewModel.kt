@@ -38,6 +38,9 @@ class HomeViewModel @Inject constructor(
     val homeState = _homeState.asStateFlow()
 
     private var countdownJob: Job? = null
+    private var locationJob: Job? = null
+
+    private var cacheCheckFetch: String? = null
 
     init {
         _homeState.update {
@@ -147,11 +150,17 @@ class HomeViewModel @Inject constructor(
 
 
     fun getPrayerTimes(latitude: String = "-6.2088", longitude: String = "106.8456") {
+        val date = DateHelper.getCurrentDate(withDayName = false)
+        val checkCache = "${latitude}_${longitude}_$date"
+
+        if (cacheCheckFetch == checkCache) return
+        cacheCheckFetch = checkCache
+
         viewModelScope.launch {
             repository.getTimingsByCity(
                 latitude = latitude,
                 longitude = longitude,
-                date = DateHelper.getCurrentDate(withDayName = false)
+                date = date
             ).collect { result ->
                 when (result) {
                     is Resource.Loading -> {
@@ -182,14 +191,18 @@ class HomeViewModel @Inject constructor(
                                 ),
                             )
                         }
-                        val lat = latitude.toDoubleOrNull() ?: -6.2088
-                        val long = longitude.toDoubleOrNull() ?: 106.8456
-                        val location =
-                            getLocationName(context = context, lat = lat, long = long)
-                        _homeState.update { current ->
-                            current.copy(
-                                locationName = current.locationName.copy(locationName = location)
-                            )
+
+                        locationJob?.cancel()
+                        locationJob = viewModelScope.launch {
+                            val lat = latitude.toDoubleOrNull() ?: -6.2088
+                            val long = longitude.toDoubleOrNull() ?: 106.8456
+                            val location =
+                                getLocationName(context = context, lat = lat, long = long)
+                            _homeState.update { current ->
+                                current.copy(
+                                    locationName = current.locationName.copy(locationName = location)
+                                )
+                            }
                         }
                     }
 

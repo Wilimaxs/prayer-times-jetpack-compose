@@ -33,14 +33,19 @@ fun HomeScreen(
 ) {
     val state by viewModel.homeState.collectAsState()
 
-    RequestLocationPermission(
-        onPermissionGranted = { latitude, longitude ->
-            viewModel.getPrayerTimes(latitude.toString(), longitude.toString())
-        },
-        onPermissionDenied = {
-            viewModel.getPrayerTimes()
-        }
-    )
+    val requestLocation = state.prayerTimes.isEmpty() && state.homeUiState is HomeUiState.Loading
+
+    if (requestLocation) {
+        RequestLocationPermission(
+            onPermissionGranted = { latitude, longitude ->
+                viewModel.getPrayerTimes(latitude.toString(), longitude.toString())
+            },
+            onPermissionDenied = {
+                viewModel.getPrayerTimes()
+            }
+        )
+    }
+
 
     Box(
         modifier = Modifier
