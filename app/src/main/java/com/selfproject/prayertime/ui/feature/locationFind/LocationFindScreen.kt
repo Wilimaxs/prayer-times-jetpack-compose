@@ -38,7 +38,7 @@ fun LocationFindScreen(
     viewModel: LocationFindViewModel = hiltViewModel(),
     onBackPressed: () -> Unit
 ) {
-    val searchState by viewModel.searchLocationText.collectAsState()
+    val searchState by viewModel.locationFindState.collectAsState()
 
     Scaffold(
         topBar = {
@@ -87,7 +87,7 @@ fun LocationFindScreen(
             ) {
                 Spacer(modifier = Modifier.height(height = 16.dp))
                 SearchTextField(
-                    value = searchState.searchLocation,
+                    value = searchState.searchLocationText.searchLocation,
                     onValueChange = { viewModel.searchLocation(location = it) }
                 )
                 Spacer(modifier = Modifier.height(height = 36.dp))
@@ -95,7 +95,9 @@ fun LocationFindScreen(
                     onCheckLocation = {}
                 )
                 Spacer(modifier = Modifier.height(height = 24.dp))
-                PopularLocation()
+                PopularLocation(
+                    popularLocations = searchState.locationItems
+                )
             }
         }
     }

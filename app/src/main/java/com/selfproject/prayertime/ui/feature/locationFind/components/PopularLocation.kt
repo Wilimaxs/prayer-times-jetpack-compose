@@ -7,20 +7,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.selfproject.prayertime.ui.feature.locationFind.LocationItem
 import com.selfproject.prayertime.ui.theme.TextWhite
 import com.selfproject.prayertime.ui.utils.reusable.ButtonCard
 
 @Composable
-fun PopularLocation() {
-    val popularLocations = listOf(
-        LocationItem(city = "Jakarta", country = "Indonesia"),
-        LocationItem(city = "Bandung", country = "Indonesia"),
-        LocationItem(city = "Surabaya", country = "Indonesia"),
-        LocationItem(city = "Medan", country = "Indonesia"),
-    )
+fun PopularLocation(
+    popularLocations: List<LocationItem>
+) {
     Column {
         Text(
             text = "Popular Location",
@@ -40,11 +36,5 @@ fun PopularLocation() {
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun PopularLocationPreview() {
-    PopularLocation()
 }
 
