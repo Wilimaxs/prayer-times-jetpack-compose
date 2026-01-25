@@ -30,7 +30,6 @@ import com.selfproject.prayertime.ui.theme.GlassPanelColor
 import com.selfproject.prayertime.ui.theme.TextWhite
 import com.selfproject.prayertime.ui.theme.TextWhiteSecondary
 
-// composable Daily Dhikr Card
 @Composable
 fun HomeDhikrCard() {
     Row(
@@ -69,8 +68,8 @@ fun HomeDhikrCard() {
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "Morning Dziqir",
-                color = TextWhiteSecondary, // Text-white/50
+                text = "Morning Dhikr",
+                color = TextWhiteSecondary,
                 fontSize = 14.sp
             )
         }

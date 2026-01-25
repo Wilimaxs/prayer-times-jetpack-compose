@@ -33,8 +33,6 @@ fun HomeScreen(
 ) {
     val state by viewModel.homeState.collectAsState()
 
-    val dataText = viewModel.todayDate
-
     RequestLocationPermission(
         onPermissionGranted = { latitude, longitude ->
             viewModel.getPrayerTimes(latitude.toString(), longitude.toString())
@@ -65,7 +63,7 @@ fun HomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             HomeDate(
-                dateText = dataText
+                dateText = state.fullTodayDate
             )
             Spacer(modifier = Modifier.height(16.dp))
             HomeLocation(

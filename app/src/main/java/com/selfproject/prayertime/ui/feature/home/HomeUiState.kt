@@ -22,7 +22,7 @@ data class TimerState(
     val seconds: String = "00",
     val progress: Float = 0f,
     val activePrayer: String = "Fajr",
-    val nextPrayerName: String = "Sholat",
+    val nextPrayerName: String = "",
     val nextPrayerTime: String = "--:--"
 )
 
@@ -35,5 +35,6 @@ data class HomeScreenState(
     val homeUiState: HomeUiState = HomeUiState.Loading,
     val prayerTimes: List<PrayerTimeItem> = emptyList(),
     val timerState: TimerState = TimerState(),
-    val locationName: LocationNameDefault = LocationNameDefault()
+    val locationName: LocationNameDefault = LocationNameDefault(),
+    val fullTodayDate: String = "",
 )
