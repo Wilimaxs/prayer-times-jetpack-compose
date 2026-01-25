@@ -150,49 +150,66 @@ class HomeViewModel @Inject constructor(
     fun getPrayerTimes(latitude: String = "-6.2088", longitude: String = "106.8456") {
         viewModelScope.launch {
             repository.getTimingsByCity(
-                latitude = latitude, longitude = longitude, date = DateHelper.getCurrentDate(withDayName = false)
+                latitude = latitude,
+                longitude = longitude,
+                date = DateHelper.getCurrentDate(withDayName = false)
             ).collect { result ->
-                _homeState.update { current ->
-                    current.copy(
-                        homeUiState = when (result) {
-                            is Resource.Loading -> HomeUiState.Loading
-                            is Resource.Success -> {
-                                if (result.data != null) {
-                                    val lat = latitude.toDoubleOrNull() ?: -6.2088
-                                    val long = longitude.toDoubleOrNull() ?: 106.8456
-                                    _homeState.update { current ->
-                                        current.copy(
-                                            locationName = current.locationName.copy(
-                                                locationName = getLocationName(
-                                                    context = context, lat = lat, long = long
-                                                )
-                                            )
-                                        )
-                                    }
-                                    startCountdown(result.data)
-                                    _homeState.update { current ->
-                                        current.copy(
-                                            prayerTimes = prayerListItem(
-                                                result.data, current.timerState.activePrayer
-                                            )
-                                        )
-                                    }
-                                    HomeUiState.Success(result.data)
-                                } else {
-                                    HomeUiState.Error("No data found")
-                                }
-                            }
+                when (result) {
+                    is Resource.Loading -> {
+                        _homeState.update {
+                            it.copy(
+                                homeUiState = HomeUiState.Loading
+                            )
+                        }
+                    }
 
-                            is Resource.Error -> {
-                                HomeUiState.Error(result.message ?: "Something went wrong")
+                    is Resource.Success -> {
+                        val data = result.data
+                        if (data == null) {
+                            _homeState.update {
+                                it.copy(
+                                    homeUiState = HomeUiState.Error("No data found")
+                                )
                             }
-                        })
+                            return@collect
+                        }
+                        _homeState.update {
+                            it.copy(
+                                homeUiState = HomeUiState.Success(data),
+                                prayerTimes = prayerListItem(
+                                    prayerData = data,
+                                    prayerNameActive = it.timerState.activePrayer
+                                ),
+                            )
+                        }
+                        startCountdown(data)
+                        val lat = latitude.toDoubleOrNull() ?: -6.2088
+                        val long = longitude.toDoubleOrNull() ?: 106.8456
+                        val location =
+                            getLocationName(context = context, lat = lat, long = long)
+                        _homeState.update { current ->
+                            current.copy(
+                                locationName = current.locationName.copy(locationName = location)
+                            )
+                        }
+                    }
+
+                    is Resource.Error -> {
+                        _homeState.update {
+                            it.copy(
+                                homeUiState = HomeUiState.Error(
+                                    result.message ?: "Something went wrong"
+                                )
+                            )
+                        }
+                    }
+
                 }
             }
         }
     }
 
-    private fun prayerListItem(
+    fun prayerListItem(
         prayerData: PrayerData, prayerNameActive: String
     ): List<PrayerTimeItem> {
         return listOf(
