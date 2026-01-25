@@ -12,15 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bedtime
-import androidx.compose.material.icons.filled.LightMode
-import androidx.compose.material.icons.filled.NightsStay
-import androidx.compose.material.icons.filled.WbSunny
-import androidx.compose.material.icons.filled.WbTwilight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.selfproject.prayertime.ui.feature.home.HomeUiState
+import com.selfproject.prayertime.ui.feature.home.PrayerTimeItem
 import com.selfproject.prayertime.ui.theme.GlassBorderActiveColor
 import com.selfproject.prayertime.ui.theme.GlassPanelActiveColor
 import com.selfproject.prayertime.ui.theme.GlassPanelColor
@@ -44,8 +38,8 @@ import com.selfproject.prayertime.ui.utils.reusable.shimmerEffect
 //horizontal prayer time list
 @Composable
 fun HomePrayerList(
+    prayerState: List<PrayerTimeItem>,
     state: HomeUiState,
-    activePrayerName: String
 ) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -59,43 +53,8 @@ fun HomePrayerList(
             }
 
             is HomeUiState.Success -> {
-                val data = state.prayerData.timings
-
-                val prayerTimes = listOf(
-                    PrayerTimeItem(
-                        "Fajr",
-                        data.fajr,
-                        Icons.Default.WbTwilight,
-                        activePrayerName == "Fajr"
-                    ),
-                    PrayerTimeItem(
-                        "Dhuhr",
-                        data.dhuhr,
-                        Icons.Default.LightMode,
-                        activePrayerName == "Dhuhr"
-                    ),
-                    PrayerTimeItem(
-                        "Asr",
-                        data.asr,
-                        Icons.Default.WbSunny,
-                        activePrayerName == "Asr"
-                    ),
-                    PrayerTimeItem(
-                        "Maghrib",
-                        data.maghrib,
-                        Icons.Default.NightsStay,
-                        activePrayerName == "Maghrib"
-                    ),
-                    PrayerTimeItem(
-                        "Isha",
-                        data.isha,
-                        Icons.Default.Bedtime,
-                        activePrayerName == "Isha"
-                    )
-                )
-
-                items(prayerTimes) { item ->
-                    PrayerItemCard(item)
+                items(prayerState.size) { item ->
+                    PrayerItemCard(item = prayerState[item])
                 }
             }
 
@@ -163,7 +122,7 @@ private fun PrayerItemCard(item: PrayerTimeItem) {
 
 //composable prayer item shimmer
 @Composable
-fun PrayerItemShimmer() {
+private fun PrayerItemShimmer() {
     Column(
         modifier = Modifier
             .clip(RoundedCornerShape(16.dp))

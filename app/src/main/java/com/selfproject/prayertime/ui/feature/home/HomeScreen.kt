@@ -31,11 +31,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     navigateToLocationPage: () -> Unit
 ) {
-    val state by viewModel.uiState.collectAsState()
-
-    val timerState by viewModel.timerState.collectAsState()
-
-    val locationName by viewModel.locationName.collectAsState()
+    val state by viewModel.homeState.collectAsState()
 
     val dataText = viewModel.todayDate
 
@@ -74,21 +70,21 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(16.dp))
             HomeLocation(
                 navigateToLocationPage = navigateToLocationPage,
-                locationName = locationName.locationName
+                locationName = state.locationName.locationName
             )
             Spacer(modifier = Modifier.height(32.dp))
             HomeTimerPrayer(
-                hours = timerState.hours,
-                minutes = timerState.minutes,
-                seconds = timerState.seconds,
-                progress = timerState.progress,
-                nextPrayerName = timerState.nextPrayerName,
-                nextPrayerTime = timerState.nextPrayerTime
+                hours = state.timerState.hours,
+                minutes = state.timerState.minutes,
+                seconds = state.timerState.seconds,
+                progress = state.timerState.progress,
+                nextPrayerName = state.timerState.nextPrayerName,
+                nextPrayerTime = state.timerState.nextPrayerTime
             )
             Spacer(modifier = Modifier.height(32.dp))
             HomePrayerList(
-                state = state,
-                activePrayerName = timerState.activePrayer
+                prayerState = state.prayerTimes,
+                state = state.homeUiState
             )
             Spacer(modifier = Modifier.height(24.dp))
             HomeDhikrCard()

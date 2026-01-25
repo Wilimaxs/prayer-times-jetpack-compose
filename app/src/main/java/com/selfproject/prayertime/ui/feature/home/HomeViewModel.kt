@@ -1,13 +1,17 @@
 package com.selfproject.prayertime.ui.feature.home
 
 import android.content.Context
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bedtime
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.NightsStay
+import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.material.icons.filled.WbTwilight
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.selfproject.prayertime.data.common.Resource
 import com.selfproject.prayertime.data.model.PrayerData
 import com.selfproject.prayertime.data.respository.PrayerRepository
-import com.selfproject.prayertime.ui.feature.home.components.LocationNameDefault
-import com.selfproject.prayertime.ui.feature.home.components.TimerState
 import com.selfproject.prayertime.ui.utils.helpers.DateHelper
 import com.selfproject.prayertime.ui.utils.helpers.getLocationName
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,6 +20,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -27,19 +32,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: PrayerRepository,
-    @param:ApplicationContext private val context: Context
+    private val repository: PrayerRepository, @param:ApplicationContext private val context: Context
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<HomeUiState>(value = HomeUiState.Loading)
-    val uiState = _uiState.asStateFlow()
-
-    private val _timerState = MutableStateFlow(TimerState())
-    val timerState = _timerState.asStateFlow()
-
-    private val _locationName = MutableStateFlow(LocationNameDefault())
-    val locationName = _locationName.asStateFlow()
-
+    private val _homeState = MutableStateFlow(HomeScreenState())
+    val homeState = _homeState.asStateFlow()
 
     // Get current date with Day for indonesia
     val todayDate: String = DateHelper.getCurrentDate()
@@ -105,8 +102,7 @@ class HomeViewModel @Inject constructor(
                     }
                 } else {
                     nextPrayerTime = prayerTimesEntries.first()
-                    targetDateTime =
-                        nextPrayerTime.value.atDate(now.toLocalDate().plusDays(1))
+                    targetDateTime = nextPrayerTime.value.atDate(now.toLocalDate().plusDays(1))
                     previousPrayerTime =
                         prayerTimesEntries.last().key to prayerTimesEntries.last().value.atDate(now.toLocalDate())
                 }
@@ -131,16 +127,20 @@ class HomeViewModel @Inject constructor(
                 val seconds = (remainingMillis / 1000) % 60
 
                 // Update state with remaining time
-                _timerState.value = TimerState(
-                    hours = "%02d".format(hours),
-                    minutes = "%02d".format(minutes),
-                    seconds = "%02d".format(seconds),
-                    progress = progressValue,
-                    activePrayer = previousPrayerTime.first,
-                    nextPrayerName = nextPrayerTime.key,
-                    nextPrayerTime = nextPrayerTime.value.format(formatter)
-                )
-                // wait for 1 second
+                _homeState.update { current ->
+                    current.copy(
+                        timerState = current.timerState.copy(
+                            hours = "%02d".format(hours),
+                            minutes = "%02d".format(minutes),
+                            seconds = "%02d".format(seconds),
+                            progress = progressValue,
+                            activePrayer = previousPrayerTime.first,
+                            nextPrayerName = nextPrayerTime.key,
+                            nextPrayerTime = nextPrayerTime.value.format(formatter)
+
+                        )
+                    )
+                }
                 delay(1000L)
             }
         }
@@ -150,26 +150,34 @@ class HomeViewModel @Inject constructor(
     fun getPrayerTimes(latitude: String = "-6.2088", longitude: String = "106.8456") {
         viewModelScope.launch {
             repository.getTimingsByCity(
-                latitude = latitude,
-                longitude = longitude,
-                date = todayDateOnly
-            )
-                .collect { result ->
-                    Timber.i("Date: Cek date now $todayDateOnly")
-                    _uiState.value = when (result) {
+                latitude = latitude, longitude = longitude, date = todayDateOnly
+            ).collect { result ->
+                Timber.i("Date: Cek date now $todayDateOnly")
+                _homeState.update { current ->
+                    current.copy(
+                        homeUiState = when (result) {
                         is Resource.Loading -> HomeUiState.Loading
                         is Resource.Success -> {
                             if (result.data != null) {
                                 val lat = latitude.toDoubleOrNull() ?: -6.2088
                                 val long = longitude.toDoubleOrNull() ?: 106.8456
-                                _locationName.value = LocationNameDefault(
-                                    locationName = getLocationName(
-                                        context = context,
-                                        lat = lat,
-                                        long = long
+                                _homeState.update { current ->
+                                    current.copy(
+                                        locationName = current.locationName.copy(
+                                            locationName = getLocationName(
+                                                context = context, lat = lat, long = long
+                                            )
+                                        )
                                     )
-                                )
+                                }
                                 startCountdown(result.data)
+                                _homeState.update { current ->
+                                    current.copy(
+                                        prayerTimes = prayerListItem(
+                                            result.data, current.timerState.activePrayer
+                                        )
+                                    )
+                                }
                                 HomeUiState.Success(result.data)
                             } else {
                                 HomeUiState.Error("No data found")
@@ -179,8 +187,36 @@ class HomeViewModel @Inject constructor(
                         is Resource.Error -> {
                             HomeUiState.Error(result.message ?: "Something went wrong")
                         }
-                    }
+                    })
                 }
+            }
         }
+    }
+
+    private fun prayerListItem(
+        prayerData: PrayerData, prayerNameActive: String
+    ): List<PrayerTimeItem> {
+        return listOf(
+            PrayerTimeItem(
+                "Fajr",
+                prayerData.timings.fajr,
+                Icons.Default.WbTwilight,
+                prayerNameActive == "Fajr"
+            ), PrayerTimeItem(
+                "Dhuhr",
+                prayerData.timings.dhuhr,
+                Icons.Default.LightMode,
+                prayerNameActive == "Dhuhr"
+            ), PrayerTimeItem(
+                "Asr", prayerData.timings.asr, Icons.Default.WbSunny, prayerNameActive == "Asr"
+            ), PrayerTimeItem(
+                "Maghrib",
+                prayerData.timings.maghrib,
+                Icons.Default.NightsStay,
+                prayerNameActive == "Maghrib"
+            ), PrayerTimeItem(
+                "Isha", prayerData.timings.isha, Icons.Default.Bedtime, prayerNameActive == "Isha"
+            )
+        )
     }
 }
