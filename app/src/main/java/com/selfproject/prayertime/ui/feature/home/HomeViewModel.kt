@@ -37,6 +37,8 @@ class HomeViewModel @Inject constructor(
     private val _homeState = MutableStateFlow(HomeScreenState())
     val homeState = _homeState.asStateFlow()
 
+    private var countdownJob: Job? = null
+
     init {
         _homeState.update {
             it.copy(
@@ -44,9 +46,6 @@ class HomeViewModel @Inject constructor(
             )
         }
     }
-
-    private var countdownJob: Job? = null
-
 
     private fun startCountdown(data: PrayerData) {
         // cancel previous job
@@ -173,6 +172,7 @@ class HomeViewModel @Inject constructor(
                             }
                             return@collect
                         }
+                        startCountdown(data)
                         _homeState.update {
                             it.copy(
                                 homeUiState = HomeUiState.Success(data),
@@ -182,7 +182,6 @@ class HomeViewModel @Inject constructor(
                                 ),
                             )
                         }
-                        startCountdown(data)
                         val lat = latitude.toDoubleOrNull() ?: -6.2088
                         val long = longitude.toDoubleOrNull() ?: 106.8456
                         val location =
