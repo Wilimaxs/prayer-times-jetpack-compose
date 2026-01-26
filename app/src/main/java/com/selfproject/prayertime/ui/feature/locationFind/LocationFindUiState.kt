@@ -7,7 +7,9 @@ data class SearchLocationText(
 
 data class LocationItem(
     val city: String,
-    val country: String,
+    val province: String,
+    val lat: Double,
+    val long: Double
 )
 
 data class LocationFindScreenState(

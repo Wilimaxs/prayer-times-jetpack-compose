@@ -28,7 +28,7 @@ fun PopularLocation(
         popularLocations.forEachIndexed { index, locationItem ->
             ButtonCard(
                 title = locationItem.city,
-                country = locationItem.country,
+                country = locationItem.province,
                 onButtonClicked = {}
             )
             if (index < popularLocations.lastIndex) {
