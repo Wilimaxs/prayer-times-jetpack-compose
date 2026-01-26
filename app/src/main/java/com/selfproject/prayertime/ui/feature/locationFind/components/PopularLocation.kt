@@ -15,7 +15,8 @@ import com.selfproject.prayertime.ui.utils.reusable.ButtonCard
 
 @Composable
 fun PopularLocation(
-    popularLocations: List<LocationItem>
+    popularLocations: List<LocationItem>,
+    onCheckClicked: (Double, Double) -> Unit
 ) {
     Column {
         Text(
@@ -29,7 +30,12 @@ fun PopularLocation(
             ButtonCard(
                 title = locationItem.city,
                 country = locationItem.province,
-                onButtonClicked = {}
+                onButtonClicked = {
+                    onCheckClicked(
+                        locationItem.lat,
+                        locationItem.long
+                    )
+                }
             )
             if (index < popularLocations.lastIndex) {
                 Spacer(modifier = Modifier.height(height = 16.dp))

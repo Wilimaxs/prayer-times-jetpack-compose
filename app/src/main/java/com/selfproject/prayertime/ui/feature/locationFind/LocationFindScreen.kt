@@ -114,7 +114,8 @@ fun LocationFindScreen(
                 )
                 Spacer(modifier = Modifier.height(height = 24.dp))
                 PopularLocation(
-                    popularLocations = searchState.locationItems
+                    popularLocations = searchState.locationItems,
+                    onCheckClicked = onLocationPicked
                 )
             }
         }

@@ -132,7 +132,6 @@ fun MainNavigationScreen() {
                         navController.popBackStack()
                     },
 
-
                     onLocationPicked = { lat, long ->
                         val route = Screen.Home.createRoute(lat, long)
                         navController.navigate(route) {
