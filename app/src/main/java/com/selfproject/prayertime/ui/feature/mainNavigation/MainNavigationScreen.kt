@@ -72,8 +72,7 @@ fun MainNavigationScreen() {
                         NavigationBarItem(
                             icon = {
                                 Icon(
-                                    item.icon,
-                                    contentDescription = item.name
+                                    item.icon, contentDescription = item.name
                                 )
                             },
                             label = { Text(item.name) },
@@ -101,25 +100,39 @@ fun MainNavigationScreen() {
         NavHost(
             navController = navController,
             startDestination = Screen.Home.route,
-            Modifier.padding(bottom = if (showBottomBar) innerPadding.calculateBottomPadding() else 0.dp)
+            Modifier.padding(
+                bottom =
+                    if (showBottomBar) innerPadding.calculateBottomPadding()
+                    else 0.dp
+            )
         ) {
             // 1. Tab Home
-            composable(route = Screen.Home.route, arguments = listOf(navArgument("lat") {
-                type = NavType.StringType
-                nullable = true
-                defaultValue = null
-            }, navArgument("long") {
-                type = NavType.StringType
-                nullable = true
-                defaultValue = null
-            })) {
+            composable(
+                route = Screen.Home.route,
+                arguments = listOf(
+                    navArgument("lat") {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    },
+                    navArgument("long") {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    }
+                )
+            ) {
                 HomeScreen(
                     navigateToLocationPage = { navController.navigate(Screen.Location.route) })
             }
 
             composable(Screen.Location.route) {
                 LocationFindScreen(
-                    onBackPressed = { navController.popBackStack() },
+                    onBackPressed = {
+                        navController.popBackStack()
+                    },
+
+
                     onLocationPicked = { lat, long ->
                         val route = Screen.Home.createRoute(lat, long)
                         navController.navigate(route) {
