@@ -32,7 +32,8 @@ import com.selfproject.prayertime.ui.theme.GlassBorderColor
 @Composable
 fun SearchTextField(
     value: String,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    onSearchExecute: () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
     Surface(
@@ -69,6 +70,7 @@ fun SearchTextField(
                 ),
                 keyboardActions = KeyboardActions(
                     onSearch = {
+                        onSearchExecute()
                         focusManager.clearFocus()
                     }
                 ),
@@ -94,6 +96,7 @@ fun SearchTextField(
 fun SearchTextFieldPreview() {
     SearchTextField(
         value = "Madinah",
-        onValueChange = {}
+        onValueChange = {},
+        onSearchExecute = {}
     )
 }

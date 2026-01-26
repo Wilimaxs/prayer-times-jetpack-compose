@@ -15,5 +15,6 @@ data class LocationItem(
 data class LocationFindScreenState(
     val searchLocationText: SearchLocationText = SearchLocationText(),
     val locationItems: List<LocationItem> = emptyList(),
-    val checkCurrentLocation: Boolean = false
+    val checkCurrentLocation: Boolean = false,
+    val isSearch: Boolean = false
 )

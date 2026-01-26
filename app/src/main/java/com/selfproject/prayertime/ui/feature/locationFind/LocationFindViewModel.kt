@@ -26,11 +26,28 @@ class LocationFindViewModel @Inject constructor(
         }
     }
 
+    fun onSearchTrigger() {
+        if (_locationFindState.value.searchLocationText.searchLocation.isNotEmpty()) {
+            _locationFindState.update {
+                it.copy(isSearch = true)
+            }
+        } else {
+            _locationFindState.update {
+                it.copy(isSearch = false)
+            }
+        }
+    }
+
     fun searchLocation(location: String) {
         _locationFindState.update {
             it.copy(
                 searchLocationText = it.searchLocationText.copy(searchLocation = location)
             )
+        }
+        if (location.isEmpty()) {
+            _locationFindState.update {
+                it.copy(isSearch = false)
+            }
         }
     }
 
