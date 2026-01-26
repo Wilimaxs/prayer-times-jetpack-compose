@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.NightsStay
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.filled.WbTwilight
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.selfproject.prayertime.data.common.Resource
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.time.Duration.between
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -31,7 +33,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: PrayerRepository, @param:ApplicationContext private val context: Context
+    private val repository: PrayerRepository,
+    @param:ApplicationContext private val context: Context,
+    savedStateHansdle: SavedStateHandle
 ) : ViewModel() {
 
     private val _homeState = MutableStateFlow(HomeScreenState())
@@ -47,6 +51,12 @@ class HomeViewModel @Inject constructor(
             it.copy(
                 fullTodayDate = DateHelper.getCurrentDate(),
             )
+        }
+        val lat = savedStateHansdle.get<String>("lat")
+        val long = savedStateHansdle.get<String>("long")
+        if (lat != null && long != null) {
+            Timber.i("Dapat kiriman argumen: $lat, $long")
+            getPrayerTimes(lat, long, forceRefresh = true)
         }
     }
 

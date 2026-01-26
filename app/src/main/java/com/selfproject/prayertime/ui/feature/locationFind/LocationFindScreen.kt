@@ -31,14 +31,32 @@ import com.selfproject.prayertime.ui.feature.locationFind.components.CheckLocati
 import com.selfproject.prayertime.ui.feature.locationFind.components.PopularLocation
 import com.selfproject.prayertime.ui.feature.locationFind.components.SearchTextField
 import com.selfproject.prayertime.ui.theme.TextWhite
+import com.selfproject.prayertime.ui.utils.helpers.RequestLocationPermission
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LocationFindScreen(
     viewModel: LocationFindViewModel = hiltViewModel(),
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onLocationPicked: (Double, Double) -> Unit
 ) {
     val searchState by viewModel.locationFindState.collectAsState()
+
+
+    if (searchState.checkCurrentLocation) {
+        RequestLocationPermission(
+            onPermissionGranted = { latitude, longitude ->
+                viewModel.setRequestLocation(false)
+                onLocationPicked(
+                    latitude,
+                    longitude
+                )
+            },
+            onPermissionDenied = {
+                viewModel.setRequestLocation(false)
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -92,7 +110,7 @@ fun LocationFindScreen(
                 )
                 Spacer(modifier = Modifier.height(height = 36.dp))
                 CheckLocationCard(
-                    onCheckLocation = {}
+                    onCheckLocation = { viewModel.setRequestLocation(true) }
                 )
                 Spacer(modifier = Modifier.height(height = 24.dp))
                 PopularLocation(

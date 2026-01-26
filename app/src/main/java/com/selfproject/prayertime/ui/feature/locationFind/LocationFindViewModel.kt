@@ -18,6 +18,14 @@ class LocationFindViewModel @Inject constructor(
         getPopularLocation()
     }
 
+    fun setRequestLocation(needRequest: Boolean) {
+        _locationFindState.update {
+            it.copy(
+                checkCurrentLocation = needRequest
+            )
+        }
+    }
+
     fun searchLocation(location: String) {
         _locationFindState.update {
             it.copy(

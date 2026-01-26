@@ -22,10 +22,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.selfproject.prayertime.ui.feature.home.HomeScreen
 import com.selfproject.prayertime.ui.feature.locationFind.LocationFindScreen
 
@@ -68,7 +70,12 @@ fun MainNavigationScreen() {
                         val isSelected =
                             currentRoute?.hierarchy?.any { it.route == item.route } == true
                         NavigationBarItem(
-                            icon = { Icon(item.icon, contentDescription = item.name) },
+                            icon = {
+                                Icon(
+                                    item.icon,
+                                    contentDescription = item.name
+                                )
+                            },
                             label = { Text(item.name) },
                             selected = isSelected,
                             colors = NavigationBarItemDefaults.colors(
@@ -97,14 +104,28 @@ fun MainNavigationScreen() {
             Modifier.padding(bottom = if (showBottomBar) innerPadding.calculateBottomPadding() else 0.dp)
         ) {
             // 1. Tab Home
-            composable(Screen.Home.route) {
+            composable(route = Screen.Home.route, arguments = listOf(navArgument("lat") {
+                type = NavType.StringType
+                nullable = true
+                defaultValue = null
+            }, navArgument("long") {
+                type = NavType.StringType
+                nullable = true
+                defaultValue = null
+            })) {
                 HomeScreen(
                     navigateToLocationPage = { navController.navigate(Screen.Location.route) })
             }
 
             composable(Screen.Location.route) {
                 LocationFindScreen(
-                    onBackPressed = { navController.popBackStack() }
+                    onBackPressed = { navController.popBackStack() },
+                    onLocationPicked = { lat, long ->
+                        val route = Screen.Home.createRoute(lat, long)
+                        navController.navigate(route) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
                 )
             }
 
