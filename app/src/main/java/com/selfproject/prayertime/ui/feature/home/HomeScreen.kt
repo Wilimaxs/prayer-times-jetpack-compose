@@ -36,9 +36,7 @@ fun HomeScreen(
 ) {
     val state by viewModel.homeState.collectAsState()
 
-    val requestLocation = state.prayerTimes.isEmpty() && state.homeUiState is HomeUiState.Loading
-
-    if (requestLocation) {
+    if (state.latitude == null || state.longitude == null) {
         RequestLocationPermission(
             onPermissionGranted = { latitude, longitude ->
                 viewModel.getPrayerTimes(latitude.toString(), longitude.toString())
@@ -48,6 +46,7 @@ fun HomeScreen(
             }
         )
     }
+
 
     PullToRefreshBox(
         state = rememberPullToRefreshState(),

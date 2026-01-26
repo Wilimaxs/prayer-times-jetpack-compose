@@ -56,6 +56,7 @@ class HomeViewModel @Inject constructor(
         val long = savedStateHansdle.get<String>("long")
         if (lat != null && long != null) {
             Timber.i("Dapat kiriman argumen: $lat, $long")
+            _homeState.update { it.copy(latitude = lat, longitude = long) }
             getPrayerTimes(lat, long, forceRefresh = true)
         }
     }
