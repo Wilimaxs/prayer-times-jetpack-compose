@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
@@ -44,7 +43,6 @@ fun MainNavigationScreen() {
         BottomNavItem(
             name = "Qur'an", route = Screen.Quran.route, icon = Icons.AutoMirrored.Filled.MenuBook
         ),
-        BottomNavItem(name = "Qibla", route = Screen.Qibla.route, icon = Icons.Default.Explore),
         BottomNavItem(
             name = "Settings", route = Screen.Settings.route, icon = Icons.Default.Settings
         ),
@@ -139,11 +137,6 @@ fun MainNavigationScreen() {
                         }
                     }
                 )
-            }
-
-            // 2. Tab Qibla (Placeholder dulu)
-            composable(Screen.Qibla.route) {
-                PlaceholderScreen("Qibla")
             }
 
             // 3. Tab Quran (Placeholder dulu)
